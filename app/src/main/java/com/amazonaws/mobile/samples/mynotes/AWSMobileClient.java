@@ -12,6 +12,8 @@ package com.amazonaws.mobile.samples.mynotes;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for
  * the specific language governing permissions and limitations under the License.
  */
+
+/*
 import android.content.Context;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -63,9 +65,6 @@ public class AWSMobileClient {
         return instance.pinpointManager;
     }
 
-    /*
-     * Static methods to submit Pinpoint Events
-     */
     public static AnalyticsClient startSession() {
         instance.pinpointManager.getSessionClient().startSession();
         return instance.pinpointManager.getAnalyticsClient();
@@ -80,3 +79,4 @@ public class AWSMobileClient {
         return instance.pinpointManager.getAnalyticsClient();
     }
 }
+*/

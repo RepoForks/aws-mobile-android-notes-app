@@ -10,9 +10,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for
  * the specific language governing permissions and limitations under the License.
  */
+
 package com.amazonaws.mobile.samples.mynotes;
 
 import android.app.LoaderManager;
+import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -311,13 +313,16 @@ public class NoteListActivity
             }
 
             // Remove the item from the database
-            ContentResolver resolver = getContentResolver();
-            int position = holder.getAdapterPosition();
+            final int position = holder.getAdapterPosition();
+            AsyncQueryHandler queryHandler = new AsyncQueryHandler(getContentResolver()) {
+                @Override
+                protected void onDeleteComplete(int token, Object cookie, int result) {
+                    super.onDeleteComplete(token, cookie, result);
+                    notifyItemRemoved(position);
+                }
+            };
             Uri itemUri = NotesContentContract.Notes.uriBuilder(holder.getNote().getNoteId());
-            int count = resolver.delete(itemUri, null, null);
-            if (count > 0) {
-                notifyItemRemoved(position);
-            }
+            queryHandler.startDelete(1, null, itemUri, null, null);
         }
     }
 }

@@ -12,6 +12,7 @@
  */
 package com.amazonaws.mobile.samples.mynotes;
 
+import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -147,12 +148,23 @@ public class NoteDetailFragment extends Fragment {
         // Convert to ContentValues and store in the database.
         if (isUpdated) {
             ContentValues values = mItem.toContentValues();
+            AsyncQueryHandler queryHandler = new AsyncQueryHandler(contentResolver) {
+                @Override
+                protected void onInsertComplete(int token, Object cookie, Uri uri) {
+                    super.onInsertComplete(token, cookie, uri);
+                    itemUri = NotesContentContract.Notes.uriBuilder(mItem.getNoteId());
+                    isUpdate = true;
+                }
+
+                @Override
+                protected void onUpdateComplete(int token, Object cookie, int result) {
+                    super.onUpdateComplete(token, cookie, result);
+                }
+            };
             if (isUpdate) {
-                contentResolver.update(itemUri, values, null, null);
+                queryHandler.startUpdate(1, null, itemUri, values, null, null);
             } else {
-                itemUri = contentResolver.insert(NotesContentContract.Notes.CONTENT_URI, values);
-                isUpdate = true;    // Anything from now on is an update
-                itemUri = NotesContentContract.Notes.uriBuilder(mItem.getNoteId());
+                queryHandler.startInsert(1, null, NotesContentContract.Notes.CONTENT_URI, values);
             }
         }
     }
